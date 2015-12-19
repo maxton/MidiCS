@@ -35,8 +35,9 @@ namespace MidiCS.Events
   }
   class SequenceNumber : MetaEvent
   {
+    public ushort Number { get; }
     internal SequenceNumber(int deltaTime, ushort number) : base(deltaTime)
-    { }
+    { Number = number; }
   }
   class TextEvent : MetaTextEvent
   {
@@ -75,8 +76,9 @@ namespace MidiCS.Events
   }
   class ChannelPrefix : MetaEvent
   {
+    public byte Channel { get; }
     internal ChannelPrefix(int deltaTime, byte channel) : base(deltaTime)
-    { }
+    { Channel = channel; }
   }
   class EndOfTrackEvent : MetaEvent
   {
@@ -91,22 +93,40 @@ namespace MidiCS.Events
   }
   class SmtpeOffset : MetaEvent
   {
+    public byte Hours { get; }
+    public byte Minutes { get; }
+    public byte Seconds { get; }
+    public byte Frames { get; }
+    public byte FrameHundredths { get; }
     internal SmtpeOffset(int deltaTime, byte h, byte m, byte s, byte f, byte ff) : base(deltaTime)
-    { }
+    {
+      Hours = h;
+      Minutes = m;
+      Seconds = s;
+      Frames = f;
+      FrameHundredths = ff;
+    }
   }
   class TimeSignature : MetaEvent
   {
+    public byte Numerator { get; }
+    public byte Denominator { get; }
+    public byte ClocksPerTick { get; }
+    public byte ThirtySecondNotesPer24Clocks { get; }
     internal TimeSignature(int deltaTime, byte num, byte denom, byte clocksPerTick, byte thirtySecondNotesPer24Clocks) : base(deltaTime)
-    { }
+    { Numerator = num; Denominator = denom;  ClocksPerTick = clocksPerTick; ThirtySecondNotesPer24Clocks = thirtySecondNotesPer24Clocks; }
   }
   class KeySignature : MetaEvent
   {
+    public byte Sharps { get; }
+    public byte Tonality { get; }
     internal KeySignature(int deltaTime, byte sharps, byte tonality) : base(deltaTime)
-    { }
+    { Sharps = sharps; Tonality = tonality; }
   }
   class SequencerSpecificEvent : MetaEvent
   {
+    public byte[] Data { get; }
     internal SequencerSpecificEvent(int deltaTime, byte[] data) : base(deltaTime)
-    { }
+    { Data = data; }
   }
 }

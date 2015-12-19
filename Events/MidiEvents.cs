@@ -31,37 +31,48 @@ namespace MidiCS.Events
 
   class NoteOnEvent : MidiEvent
   {
+    public byte Key { get; }
+    public byte Velocity { get; }
     internal NoteOnEvent(int deltaTime, byte channel, byte key, byte velocity) : base(deltaTime, channel)
-    { }
+    { Key = key; Velocity = velocity; }
   }
   class NoteOffEvent : MidiEvent
   {
+    public byte Key { get; }
+    public byte Velocity { get; }
     internal NoteOffEvent(int deltaTime, byte channel, byte key, byte velocity) : base(deltaTime, channel)
-    { }
+    { Key = key; Velocity = velocity; }
   }
   class NotePressureEvent : MidiEvent
   {
+    public byte Key { get; }
+    public byte Pressure { get; }
     internal NotePressureEvent(int deltaTime, byte channel, byte key, byte pressure) : base(deltaTime, channel)
-    { }
+    { Key = key; Pressure = pressure; }
   }
   class ControllerEvent : MidiEvent
   {
+    public byte Controller { get; }
+    public byte Value { get; }
     internal ControllerEvent(int deltaTime, byte channel, byte controller, byte value) : base(deltaTime, channel)
-    { }
+    { Controller = controller; Value = value; }
   }
   class ProgramChgEvent : MidiEvent
   {
+    public byte Program { get; }
     internal ProgramChgEvent(int deltaTime, byte channel, byte program) : base(deltaTime, channel)
-    { }
+    { Program = program; }
   }
   class ChannelPressureEvent : MidiEvent
   {
+    public byte Pressure { get; }
     internal ChannelPressureEvent(int deltaTime, byte channel, byte pressure) : base(deltaTime, channel)
-    { }
+    { Pressure = pressure; }
   }
   class PitchBendEvent : MidiEvent
   {
+    public ushort Bend { get; }
     internal PitchBendEvent(int deltaTime, byte channel, ushort bend) : base(deltaTime, channel)
-    { }
+    { Bend = bend; }
   }
 }

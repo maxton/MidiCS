@@ -74,8 +74,8 @@ namespace MidiCS
           value = s.ReadUInt8();
           return new ProgramChgEvent(deltaTime, channel, value);
         case EventType.ChannelPressure:
-          value = s.ReadUInt8();
-          return new ChannelPressureEvent(deltaTime, channel, value);
+          pressure = s.ReadUInt8();
+          return new ChannelPressureEvent(deltaTime, channel, pressure);
         case EventType.PitchBend:
           pitchBend = s.ReadUInt16LE();
           return new PitchBendEvent(deltaTime, channel, pitchBend);

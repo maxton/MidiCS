@@ -46,7 +46,8 @@ namespace MidiCS
 
     private List<MidiMessage> _messages;
     public List<MidiMessage> Messages => _messages;
-    public MidiTrack(List<MidiMessage> messages, long totalTicks)
+
+    private MidiTrack(List<MidiMessage> messages, long totalTicks)
     {
       _messages = messages;
       TotalTicks = totalTicks;
