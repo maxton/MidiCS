@@ -19,26 +19,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace MidiCS
 {
-  /// <summary>
-  /// The format of the MIDI file.
-  /// </summary>
-  public enum MidiFormat : ushort
-  {
-    /// <summary>
-    /// Midi file contains one track.
-    /// </summary>
-    Single = 0x0,
-
-    /// <summary>
-    /// Midi file contains multiple tracks.
-    /// </summary>
-    MultiTrack = 0x1
-
-      // note: format 2 is NOT supported. (for now)
-  }
 
   public class MidiFile
   {
@@ -56,8 +40,10 @@ namespace MidiCS
     public MidiFormat Format => _format;
 
     private List<MidiTrack> _tracks;
+    private List<TimeSigTempoEvent> _tempoTimeSigMap;
 
     public double Duration { get; }
+    public IList<TimeSigTempoEvent> TempoTimeSigMap => _tempoTimeSigMap;
 
     private ushort _ticksPerQn;
 
@@ -65,7 +51,7 @@ namespace MidiCS
     {
       readHeader(stream);
       readTracks(stream);
-      Duration = CalcDuration();
+      Duration = ProcessTempoMap();
     }
 
     private void readHeader(Stream stream)
@@ -90,20 +76,39 @@ namespace MidiCS
       }
     }
 
-    private double CalcDuration()
+    /// <summary>
+    /// Process the tempo map, also calculate the duration of the file.
+    /// </summary>
+    /// <returns></returns>
+    private double ProcessTempoMap()
     {
       double duration = 0;
       long ticks = 0; // running total of MIDI ticks
       int tempo = 500000; // 500,000 microseconds per beat
-      foreach(MidiMessage m in _tracks[0].Messages) // tempo map track
+
+      // tempo+timesig map stuff
+      _tempoTimeSigMap = new List<TimeSigTempoEvent>();
+      var tempos = new Dictionary<long, Events.TempoEvent>();
+      var sigs = new Dictionary<long, Events.TimeSignature>();
+      var durations = new SortedDictionary<long, double>();
+
+      foreach (MidiMessage m in _tracks[0].Messages) // tempo map track
       {
         ticks += m.DeltaTime;
         duration += (m.DeltaTime / (double)_ticksPerQn) * (tempo / 1000000.0);
-        if(m is Events.TempoEvent)
+        if (m is Events.TempoEvent)
         {
           tempo = (m as Events.TempoEvent).MicrosPerQn;
+          tempos.Add(ticks, m as Events.TempoEvent);
+          if (!durations.ContainsKey(ticks)) durations.Add(ticks, duration);
+        }
+        else if (m is Events.TimeSignature)
+        {
+          sigs.Add(ticks, m as Events.TimeSignature);
+          if (!durations.ContainsKey(ticks)) durations.Add(ticks, duration);
         }
       }
+      // calculate length for tracks extending past tempo map
       for(var i = 1; i < _tracks.Count; i++)
       {
         if (_tracks[i].TotalTicks <= ticks) continue;
@@ -116,7 +121,70 @@ namespace MidiCS
           duration += (m.DeltaTime / (double)_ticksPerQn) * (tempo / 1000000.0);
         }
       }
+
+      // more tempo+timesig map stuff
+      double lastTempo = 120.0;
+      Events.TempoEvent te;
+      Events.TimeSignature ts;
+      double time = 0.0;
+      foreach (long tick in durations.Keys)
+      {
+        durations.TryGetValue(tick, out time);
+        if (tempos.ContainsKey(tick) && sigs.ContainsKey(tick))
+        {
+          tempos.TryGetValue(tick, out te);
+          sigs.TryGetValue(tick, out ts);
+          lastTempo = 60.0 / (te.MicrosPerQn / 1000000.0);
+          _tempoTimeSigMap.Add(new TimeSigTempoEvent(time, lastTempo, true, ts.Numerator, (byte)(1 << ts.Denominator)));
+        }
+        else if (tempos.ContainsKey(tick))
+        {
+          tempos.TryGetValue(tick, out te);
+          lastTempo = 60.0 / (te.MicrosPerQn / 1000000.0);
+          _tempoTimeSigMap.Add(new TimeSigTempoEvent(time, lastTempo, false, 0, 0));
+        }
+        else if (sigs.ContainsKey(tick))
+        {
+          sigs.TryGetValue(tick, out ts);
+          _tempoTimeSigMap.Add(new TimeSigTempoEvent(time, lastTempo, true, ts.Numerator, (byte)(1 << ts.Denominator)));
+        }
+      }
       return duration;
     }
+  }
+
+  public struct TimeSigTempoEvent
+  {
+    public double Time { get; }
+    public double BPM { get; }
+    public bool NewTimeSig { get; }
+    public byte Numerator { get; }
+    public byte Denominator { get; }
+    public TimeSigTempoEvent(double time, double bpm, bool newtimesig, byte num, byte denom)
+    {
+      Time = time;
+      BPM = bpm;
+      NewTimeSig = newtimesig;
+      Numerator = num;
+      Denominator = denom;
+    }
+  }
+
+  /// <summary>
+  /// The format of the MIDI file.
+  /// </summary>
+  public enum MidiFormat : ushort
+  {
+    /// <summary>
+    /// Midi file contains one track.
+    /// </summary>
+    Single = 0x0,
+
+    /// <summary>
+    /// Midi file contains multiple tracks.
+    /// </summary>
+    MultiTrack = 0x1
+
+    // note: format 2 is NOT supported. (for now)
   }
 }
