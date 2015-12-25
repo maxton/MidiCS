@@ -36,15 +36,29 @@ namespace MidiCS
       return new MidiFile(stream);
     }
 
-    private MidiFormat _format;
     public MidiFormat Format => _format;
-
-    private List<MidiTrack> _tracks;
-    private List<TimeSigTempoEvent> _tempoTimeSigMap;
-
     public double Duration { get; }
     public IList<TimeSigTempoEvent> TempoTimeSigMap => _tempoTimeSigMap;
+    public ushort TicksPerQN => _ticksPerQn;
 
+    /// <summary>
+    /// Tries to find the track whose name matches. Otherwise null is returned.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    public MidiTrack GetTrackByName(string name)
+    {
+      foreach(var track in _tracks)
+      {
+        if (name == track.Name)
+          return track;
+      }
+      return null;
+    }
+
+    private MidiFormat _format;
+    private List<MidiTrack> _tracks;
+    private List<TimeSigTempoEvent> _tempoTimeSigMap;
     private ushort _ticksPerQn;
 
     private MidiFile(Stream stream)

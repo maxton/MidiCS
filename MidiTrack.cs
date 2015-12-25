@@ -22,7 +22,7 @@ using System.IO;
 
 namespace MidiCS
 {
-  class MidiTrack
+  public class MidiTrack
   {
     public static MidiTrack ReadFrom(Stream stream)
     {
@@ -31,24 +31,29 @@ namespace MidiCS
       long trkLen = stream.ReadUInt32BE();
       List<MidiMessage> messages = new List<MidiMessage>();
       long totalTicks = 0;
+      string name = "";
       while (trkLen > 0)
       {
         long pos = stream.Position;
         var newMsg = MidiMessage.ReadFrom(stream);
         messages.Add(newMsg);
+        if (newMsg is Events.TrackName)
+          name = (newMsg as Events.TrackName).Text;
         totalTicks += newMsg.DeltaTime;
         trkLen -= stream.Position - pos; // subtract message length from total track length
       }
-      return new MidiTrack(messages, totalTicks);
+      return new MidiTrack(messages, totalTicks, name);
     }
 
-    public long TotalTicks { get; }
-
     private List<MidiMessage> _messages;
+
+    public long TotalTicks { get; }
+    public string Name { get; }
     public List<MidiMessage> Messages => _messages;
 
-    private MidiTrack(List<MidiMessage> messages, long totalTicks)
+    private MidiTrack(List<MidiMessage> messages, long totalTicks, string name)
     {
+      Name = name;
       _messages = messages;
       TotalTicks = totalTicks;
     }

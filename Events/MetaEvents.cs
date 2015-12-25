@@ -20,79 +20,93 @@ using System;
 
 namespace MidiCS.Events
 {
-  class MetaEvent : MidiMessage
+  public abstract class MetaEvent : MidiMessage
   {
+    public override EventType Type => EventType.MetaEvent;
+    public abstract MetaEventType MetaType { get; }
     internal MetaEvent(int deltaTime) : base(deltaTime)
     { }
   }
-  abstract class MetaTextEvent : MetaEvent
+  public abstract class MetaTextEvent : MetaEvent
   {
-    string Text { get; }
+    public string Text { get; }
     internal MetaTextEvent(int deltaTime, string text) : base(deltaTime)
     {
       Text = text;
     }
   }
-  class SequenceNumber : MetaEvent
+  public class SequenceNumber : MetaEvent
   {
+    public override MetaEventType MetaType => MetaEventType.SequenceNumber;
     public ushort Number { get; }
     internal SequenceNumber(int deltaTime, ushort number) : base(deltaTime)
     { Number = number; }
   }
-  class TextEvent : MetaTextEvent
+  public class TextEvent : MetaTextEvent
   {
+    public override MetaEventType MetaType => MetaEventType.TextEvent;
     internal TextEvent(int deltaTime, string text) : base(deltaTime, text)
     { }
   }
-  class CopyrightNotice : MetaTextEvent
+  public class CopyrightNotice : MetaTextEvent
   {
+    public override MetaEventType MetaType => MetaEventType.CopyrightNotice;
     internal CopyrightNotice(int deltaTime, string text) : base(deltaTime, text)
     { }
   }
-  class TrackName : MetaTextEvent
+  public class TrackName : MetaTextEvent
   {
+    public override MetaEventType MetaType => MetaEventType.TrackName;
     internal TrackName(int deltaTime, string name) : base(deltaTime, name)
     {  }
   }
-  class InstrumentName : MetaTextEvent
+  public class InstrumentName : MetaTextEvent
   {
+    public override MetaEventType MetaType => MetaEventType.InstrumentName;
     internal InstrumentName(int deltaTime, string name) : base(deltaTime, name)
     { }
   }
-  class Lyric : MetaTextEvent
+  public class Lyric : MetaTextEvent
   {
+    public override MetaEventType MetaType => MetaEventType.Lyric;
     internal Lyric(int deltaTime, string text) : base(deltaTime, text)
     { }
   }
-  class Marker : MetaTextEvent
+  public class Marker : MetaTextEvent
   {
+    public override MetaEventType MetaType => MetaEventType.Marker;
     internal Marker(int deltaTime, string text) : base(deltaTime, text)
     { }
   }
-  class CuePoint : MetaTextEvent
+  public class CuePoint : MetaTextEvent
   {
+    public override MetaEventType MetaType => MetaEventType.CuePoint;
     internal CuePoint(int deltaTime, string text) : base(deltaTime, text)
     { }
   }
-  class ChannelPrefix : MetaEvent
+  public class ChannelPrefix : MetaEvent
   {
+    public override MetaEventType MetaType => MetaEventType.ChannelPrefix;
     public byte Channel { get; }
     internal ChannelPrefix(int deltaTime, byte channel) : base(deltaTime)
     { Channel = channel; }
   }
-  class EndOfTrackEvent : MetaEvent
+  public class EndOfTrackEvent : MetaEvent
   {
+    public override MetaEventType MetaType => MetaEventType.EndOfTrack;
     internal EndOfTrackEvent(int deltaTime) : base(deltaTime)
     { }
   }
-  class TempoEvent : MetaEvent
+  public class TempoEvent : MetaEvent
   {
+    public override MetaEventType MetaType => MetaEventType.TempoEvent;
     public int MicrosPerQn { get; }
     internal TempoEvent(int deltaTime, int microsPerQn) : base(deltaTime)
     { MicrosPerQn = microsPerQn; }
   }
-  class SmtpeOffset : MetaEvent
+  public class SmtpeOffset : MetaEvent
   {
+    public override MetaEventType MetaType => MetaEventType.SmtpeOffset;
     public byte Hours { get; }
     public byte Minutes { get; }
     public byte Seconds { get; }
@@ -107,8 +121,9 @@ namespace MidiCS.Events
       FrameHundredths = ff;
     }
   }
-  class TimeSignature : MetaEvent
+  public class TimeSignature : MetaEvent
   {
+    public override MetaEventType MetaType => MetaEventType.TimeSignature;
     public byte Numerator { get; }
     public byte Denominator { get; }
     public byte ClocksPerTick { get; }
@@ -116,15 +131,17 @@ namespace MidiCS.Events
     internal TimeSignature(int deltaTime, byte num, byte denom, byte clocksPerTick, byte thirtySecondNotesPer24Clocks) : base(deltaTime)
     { Numerator = num; Denominator = denom;  ClocksPerTick = clocksPerTick; ThirtySecondNotesPer24Clocks = thirtySecondNotesPer24Clocks; }
   }
-  class KeySignature : MetaEvent
+  public class KeySignature : MetaEvent
   {
+    public override MetaEventType MetaType => MetaEventType.KeySignature;
     public byte Sharps { get; }
     public byte Tonality { get; }
     internal KeySignature(int deltaTime, byte sharps, byte tonality) : base(deltaTime)
     { Sharps = sharps; Tonality = tonality; }
   }
-  class SequencerSpecificEvent : MetaEvent
+  public class SequencerSpecificEvent : MetaEvent
   {
+    public override MetaEventType MetaType => MetaEventType.SequencerSpecific;
     public byte[] Data { get; }
     internal SequencerSpecificEvent(int deltaTime, byte[] data) : base(deltaTime)
     { Data = data; }

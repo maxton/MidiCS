@@ -85,56 +85,56 @@ namespace MidiCS
         byte type = s.ReadUInt8();
         int length = s.ReadMidiMultiByte();
         byte[] tmp;
-        switch (type)
+        switch ((MetaEventType)type)
         {
-          case 0x00:
+          case MetaEventType.SequenceNumber:
             if (length != 2)
               throw new InvalidDataException("Sequence number events must have 2 bytes of data; this one has " + length);
             return new SequenceNumber(deltaTime, s.ReadUInt16BE());
-          case 0x01:
+          case MetaEventType.TextEvent:
             return new TextEvent(deltaTime, Encoding.ASCII.GetString(s.ReadBytes(length)));
-          case 0x02:
+          case MetaEventType.CopyrightNotice:
             return new CopyrightNotice(deltaTime, Encoding.ASCII.GetString(s.ReadBytes(length)));
-          case 0x03:
+          case MetaEventType.TrackName:
             return new TrackName(deltaTime, Encoding.ASCII.GetString(s.ReadBytes(length)));
-          case 0x04:
+          case MetaEventType.InstrumentName:
             return new InstrumentName(deltaTime, Encoding.ASCII.GetString(s.ReadBytes(length)));
-          case 0x05:
+          case MetaEventType.Lyric:
             return new Lyric(deltaTime, Encoding.ASCII.GetString(s.ReadBytes(length)));
-          case 0x06:
+          case MetaEventType.Marker:
             return new Marker(deltaTime, Encoding.ASCII.GetString(s.ReadBytes(length)));
-          case 0x07:
+          case MetaEventType.CuePoint:
             return new CuePoint(deltaTime, Encoding.ASCII.GetString(s.ReadBytes(length)));
-          case 0x20:
+          case MetaEventType.ChannelPrefix:
             if (length != 1)
               throw new InvalidDataException("Channel prefix events must have 1 byte of data; this one has " + length);
             return new ChannelPrefix(deltaTime, s.ReadUInt8());
-          case 0x2F:
+          case MetaEventType.EndOfTrack:
             return new EndOfTrackEvent(deltaTime);
-          case 0x51:
+          case MetaEventType.TempoEvent:
             if (length != 3)
               throw new InvalidDataException("Tempo events must have 3 bytes of data; this one has " + length);
             return new TempoEvent(deltaTime, s.ReadUInt24BE());
-          case 0x54:
+          case MetaEventType.SmtpeOffset:
             if (length != 5)
               throw new InvalidDataException("SMTPE Offset events must have 5 bytes of data; this one has " + length);
             tmp = s.ReadBytes(length);
             return new SmtpeOffset(deltaTime, tmp[0], tmp[1], tmp[2], tmp[3], tmp[4]);
-          case 0x58:
+          case MetaEventType.TimeSignature:
             if (length != 4)
               throw new InvalidDataException("Time Signature events must have 4 bytes of data; this one has " + length);
             tmp = s.ReadBytes(length);
             return new TimeSignature(deltaTime, tmp[0], tmp[1], tmp[2], tmp[3]);
-          case 0x59:
+          case MetaEventType.KeySignature:
             if (length != 2)
               throw new InvalidDataException("Key Signature events must have 2 bytes of data; this one has " + length);
             tmp = s.ReadBytes(length);
             return new KeySignature(deltaTime, tmp[0], tmp[1]);
-          case 0x7F:
+          case MetaEventType.SequencerSpecific:
             return new SequencerSpecificEvent(deltaTime, s.ReadBytes(length));
           default: // unknown meta event, just skip past it.
             s.Position += length;
-            return new MetaEvent(deltaTime);
+            return null;
         }
       }
       else // sysex
@@ -158,13 +158,14 @@ namespace MidiCS
     /// </summary>
     public int DeltaTime { get; }
 
+    public abstract EventType Type { get; }
     internal MidiMessage(int deltaTime)
     {
       DeltaTime = deltaTime;
     }
   }
 
-  enum EventType : byte
+  public enum EventType : byte
   {
     NoteOff = 0x80,
     NoteOn = 0x90,
@@ -173,6 +174,26 @@ namespace MidiCS
     ProgramChange = 0xC0,
     ChannelPressure = 0xD0,
     PitchBend = 0xE0,
-    MetaOrSysex = 0xF0
+    MetaEvent = 0xFF,
+    Sysex = 0xF0,
+    SysexRaw = 0xF7
+  }
+  public enum MetaEventType : byte
+  {
+    SequenceNumber = 0x00,
+    TextEvent = 0x01,
+    CopyrightNotice = 0x02,
+    TrackName = 0x03,
+    InstrumentName = 0x04,
+    Lyric = 0x05,
+    Marker = 0x06,
+    CuePoint = 0x07,
+    ChannelPrefix = 0x20,
+    EndOfTrack = 0x2F,
+    TempoEvent = 0x51,
+    SmtpeOffset = 0x54,
+    TimeSignature = 0x58,
+    KeySignature = 0x59,
+    SequencerSpecific = 0x7F
   }
 }

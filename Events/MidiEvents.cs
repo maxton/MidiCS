@@ -20,7 +20,7 @@ using System;
 
 namespace MidiCS.Events
 {
-  abstract class MidiEvent : MidiMessage
+  public abstract class MidiEvent : MidiMessage
   {
     public byte Channel { get; }
     internal MidiEvent(int deltaTime, byte channel) : base(deltaTime)
@@ -29,48 +29,55 @@ namespace MidiCS.Events
     }
   }
 
-  class NoteOnEvent : MidiEvent
+  public class NoteOnEvent : MidiEvent
   {
+    public override EventType Type => EventType.NoteOn;
     public byte Key { get; }
     public byte Velocity { get; }
     internal NoteOnEvent(int deltaTime, byte channel, byte key, byte velocity) : base(deltaTime, channel)
     { Key = key; Velocity = velocity; }
   }
-  class NoteOffEvent : MidiEvent
+  public class NoteOffEvent : MidiEvent
   {
+    public override EventType Type => EventType.NoteOff;
     public byte Key { get; }
     public byte Velocity { get; }
     internal NoteOffEvent(int deltaTime, byte channel, byte key, byte velocity) : base(deltaTime, channel)
     { Key = key; Velocity = velocity; }
   }
-  class NotePressureEvent : MidiEvent
+  public class NotePressureEvent : MidiEvent
   {
+    public override EventType Type => EventType.NotePresure;
     public byte Key { get; }
     public byte Pressure { get; }
     internal NotePressureEvent(int deltaTime, byte channel, byte key, byte pressure) : base(deltaTime, channel)
     { Key = key; Pressure = pressure; }
   }
-  class ControllerEvent : MidiEvent
+  public class ControllerEvent : MidiEvent
   {
+    public override EventType Type => EventType.Controller;
     public byte Controller { get; }
     public byte Value { get; }
     internal ControllerEvent(int deltaTime, byte channel, byte controller, byte value) : base(deltaTime, channel)
     { Controller = controller; Value = value; }
   }
-  class ProgramChgEvent : MidiEvent
+  public class ProgramChgEvent : MidiEvent
   {
+    public override EventType Type => EventType.ProgramChange;
     public byte Program { get; }
     internal ProgramChgEvent(int deltaTime, byte channel, byte program) : base(deltaTime, channel)
     { Program = program; }
   }
-  class ChannelPressureEvent : MidiEvent
+  public class ChannelPressureEvent : MidiEvent
   {
+    public override EventType Type => EventType.ChannelPressure;
     public byte Pressure { get; }
     internal ChannelPressureEvent(int deltaTime, byte channel, byte pressure) : base(deltaTime, channel)
     { Pressure = pressure; }
   }
-  class PitchBendEvent : MidiEvent
+  public class PitchBendEvent : MidiEvent
   {
+    public override EventType Type => EventType.PitchBend;
     public ushort Bend { get; }
     internal PitchBendEvent(int deltaTime, byte channel, ushort bend) : base(deltaTime, channel)
     { Bend = bend; }
