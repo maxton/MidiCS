@@ -20,11 +20,15 @@ using System;
 
 namespace MidiCS.Events
 {
-  public class SysexEvent : MidiMessage
+  public class SysexEvent : IMidiMessage
   {
-    public override EventType Type => EventType.SysexRaw;
+    public int DeltaTime { get; }
+    public EventType Type => EventType.SysexRaw;
     public byte[] Data { get; }
-    internal SysexEvent(int deltaTime, byte[] sysexData) : base(deltaTime)
-    { Data = sysexData; }
+    internal SysexEvent(int deltaTime, byte[] sysexData)
+    {
+      DeltaTime = deltaTime;
+      Data = sysexData;
+    }
   }
 }

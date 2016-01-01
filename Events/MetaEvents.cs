@@ -20,100 +20,157 @@ using System;
 
 namespace MidiCS.Events
 {
-  public abstract class MetaEvent : MidiMessage
+  public interface MetaEvent : IMidiMessage
   {
-    public override EventType Type => EventType.MetaEvent;
-    public abstract MetaEventType MetaType { get; }
-    internal MetaEvent(int deltaTime) : base(deltaTime)
-    { }
+    MetaEventType MetaType { get; }
   }
-  public abstract class MetaTextEvent : MetaEvent
+  public interface MetaTextEvent : MetaEvent
   {
-    public string Text { get; }
-    internal MetaTextEvent(int deltaTime, string text) : base(deltaTime)
-    {
-      Text = text;
-    }
+    string Text { get; }
   }
   public class SequenceNumber : MetaEvent
   {
-    public override MetaEventType MetaType => MetaEventType.SequenceNumber;
+    public int DeltaTime { get; }
+    public EventType Type => EventType.MetaEvent;
+    public MetaEventType MetaType => MetaEventType.SequenceNumber;
     public ushort Number { get; }
-    internal SequenceNumber(int deltaTime, ushort number) : base(deltaTime)
-    { Number = number; }
+    internal SequenceNumber(int deltaTime, ushort number)
+    {
+      DeltaTime = deltaTime;
+      Number = number;
+    }
   }
   public class TextEvent : MetaTextEvent
   {
-    public override MetaEventType MetaType => MetaEventType.TextEvent;
-    internal TextEvent(int deltaTime, string text) : base(deltaTime, text)
-    { }
+    public int DeltaTime { get; }
+    public EventType Type => EventType.MetaEvent;
+    public string Text { get; }
+    public MetaEventType MetaType => MetaEventType.TextEvent;
+    internal TextEvent(int deltaTime, string text)
+    {
+      DeltaTime = deltaTime;
+      Text = text;
+    }
   }
   public class CopyrightNotice : MetaTextEvent
   {
-    public override MetaEventType MetaType => MetaEventType.CopyrightNotice;
-    internal CopyrightNotice(int deltaTime, string text) : base(deltaTime, text)
-    { }
+    public int DeltaTime { get; }
+    public EventType Type => EventType.MetaEvent;
+    public string Text { get; }
+    public MetaEventType MetaType => MetaEventType.CopyrightNotice;
+    internal CopyrightNotice(int deltaTime, string text)
+    {
+      DeltaTime = deltaTime;
+      Text = text;
+    }
   }
   public class TrackName : MetaTextEvent
   {
-    public override MetaEventType MetaType => MetaEventType.TrackName;
-    internal TrackName(int deltaTime, string name) : base(deltaTime, name)
-    {  }
+    public int DeltaTime { get; }
+    public EventType Type => EventType.MetaEvent;
+    public string Text { get; }
+    public MetaEventType MetaType => MetaEventType.TrackName;
+    internal TrackName(int deltaTime, string name)
+    {
+      DeltaTime = deltaTime;
+      Text = name;
+    }
   }
   public class InstrumentName : MetaTextEvent
   {
-    public override MetaEventType MetaType => MetaEventType.InstrumentName;
-    internal InstrumentName(int deltaTime, string name) : base(deltaTime, name)
-    { }
+    public int DeltaTime { get; }
+    public EventType Type => EventType.MetaEvent;
+    public string Text { get; }
+    public MetaEventType MetaType => MetaEventType.InstrumentName;
+    internal InstrumentName(int deltaTime, string name)
+    {
+      DeltaTime = deltaTime;
+      Text = name;
+    }
   }
   public class Lyric : MetaTextEvent
   {
-    public override MetaEventType MetaType => MetaEventType.Lyric;
-    internal Lyric(int deltaTime, string text) : base(deltaTime, text)
-    { }
+    public int DeltaTime { get; }
+    public EventType Type => EventType.MetaEvent;
+    public string Text { get; }
+    public MetaEventType MetaType => MetaEventType.Lyric;
+    internal Lyric(int deltaTime, string text)
+    {
+      DeltaTime = deltaTime;
+      Text = text;
+    }
   }
   public class Marker : MetaTextEvent
   {
-    public override MetaEventType MetaType => MetaEventType.Marker;
-    internal Marker(int deltaTime, string text) : base(deltaTime, text)
-    { }
+    public int DeltaTime { get; }
+    public EventType Type => EventType.MetaEvent;
+    public string Text { get; }
+    public MetaEventType MetaType => MetaEventType.Marker;
+    internal Marker(int deltaTime, string text)
+    {
+      DeltaTime = deltaTime;
+      Text = text;
+    }
   }
   public class CuePoint : MetaTextEvent
   {
-    public override MetaEventType MetaType => MetaEventType.CuePoint;
-    internal CuePoint(int deltaTime, string text) : base(deltaTime, text)
-    { }
+    public int DeltaTime { get; }
+    public EventType Type => EventType.MetaEvent;
+    public string Text { get; }
+    public MetaEventType MetaType => MetaEventType.CuePoint;
+    internal CuePoint(int deltaTime, string text)
+    {
+      DeltaTime = deltaTime;
+      Text = text;
+    }
   }
   public class ChannelPrefix : MetaEvent
   {
-    public override MetaEventType MetaType => MetaEventType.ChannelPrefix;
+    public int DeltaTime { get; }
+    public EventType Type => EventType.MetaEvent;
+    public MetaEventType MetaType => MetaEventType.ChannelPrefix;
     public byte Channel { get; }
-    internal ChannelPrefix(int deltaTime, byte channel) : base(deltaTime)
-    { Channel = channel; }
+    internal ChannelPrefix(int deltaTime, byte channel)
+    {
+      DeltaTime = deltaTime;
+      Channel = channel;
+    }
   }
   public class EndOfTrackEvent : MetaEvent
   {
-    public override MetaEventType MetaType => MetaEventType.EndOfTrack;
-    internal EndOfTrackEvent(int deltaTime) : base(deltaTime)
-    { }
+    public int DeltaTime { get; }
+    public EventType Type => EventType.MetaEvent;
+    public MetaEventType MetaType => MetaEventType.EndOfTrack;
+    internal EndOfTrackEvent(int deltaTime)
+    {
+      DeltaTime = deltaTime;
+    }
   }
   public class TempoEvent : MetaEvent
   {
-    public override MetaEventType MetaType => MetaEventType.TempoEvent;
+    public int DeltaTime { get; }
+    public EventType Type => EventType.MetaEvent;
+    public MetaEventType MetaType => MetaEventType.TempoEvent;
     public int MicrosPerQn { get; }
-    internal TempoEvent(int deltaTime, int microsPerQn) : base(deltaTime)
-    { MicrosPerQn = microsPerQn; }
+    internal TempoEvent(int deltaTime, int microsPerQn)
+    {
+      DeltaTime = deltaTime;
+      MicrosPerQn = microsPerQn;
+    }
   }
   public class SmtpeOffset : MetaEvent
   {
-    public override MetaEventType MetaType => MetaEventType.SmtpeOffset;
+    public int DeltaTime { get; }
+    public EventType Type => EventType.MetaEvent;
+    public MetaEventType MetaType => MetaEventType.SmtpeOffset;
     public byte Hours { get; }
     public byte Minutes { get; }
     public byte Seconds { get; }
     public byte Frames { get; }
     public byte FrameHundredths { get; }
-    internal SmtpeOffset(int deltaTime, byte h, byte m, byte s, byte f, byte ff) : base(deltaTime)
+    internal SmtpeOffset(int deltaTime, byte h, byte m, byte s, byte f, byte ff)
     {
+      DeltaTime = deltaTime;
       Hours = h;
       Minutes = m;
       Seconds = s;
@@ -123,27 +180,46 @@ namespace MidiCS.Events
   }
   public class TimeSignature : MetaEvent
   {
-    public override MetaEventType MetaType => MetaEventType.TimeSignature;
+    public int DeltaTime { get; }
+    public EventType Type => EventType.MetaEvent;
+    public MetaEventType MetaType => MetaEventType.TimeSignature;
     public byte Numerator { get; }
     public byte Denominator { get; }
     public byte ClocksPerTick { get; }
     public byte ThirtySecondNotesPer24Clocks { get; }
-    internal TimeSignature(int deltaTime, byte num, byte denom, byte clocksPerTick, byte thirtySecondNotesPer24Clocks) : base(deltaTime)
-    { Numerator = num; Denominator = denom;  ClocksPerTick = clocksPerTick; ThirtySecondNotesPer24Clocks = thirtySecondNotesPer24Clocks; }
+    internal TimeSignature(int deltaTime, byte num, byte denom, byte clocksPerTick, byte thirtySecondNotesPer24Clocks)
+    {
+      DeltaTime = deltaTime;
+      Numerator = num;
+      Denominator = denom;
+      ClocksPerTick = clocksPerTick;
+      ThirtySecondNotesPer24Clocks = thirtySecondNotesPer24Clocks;
+    }
   }
   public class KeySignature : MetaEvent
   {
-    public override MetaEventType MetaType => MetaEventType.KeySignature;
+    public int DeltaTime { get; }
+    public EventType Type => EventType.MetaEvent;
+    public MetaEventType MetaType => MetaEventType.KeySignature;
     public byte Sharps { get; }
     public byte Tonality { get; }
-    internal KeySignature(int deltaTime, byte sharps, byte tonality) : base(deltaTime)
-    { Sharps = sharps; Tonality = tonality; }
+    internal KeySignature(int deltaTime, byte sharps, byte tonality)
+    {
+      DeltaTime = deltaTime;
+      Sharps = sharps;
+      Tonality = tonality;
+    }
   }
   public class SequencerSpecificEvent : MetaEvent
   {
-    public override MetaEventType MetaType => MetaEventType.SequencerSpecific;
+    public int DeltaTime { get; }
+    public EventType Type => EventType.MetaEvent;
+    public MetaEventType MetaType => MetaEventType.SequencerSpecific;
     public byte[] Data { get; }
-    internal SequencerSpecificEvent(int deltaTime, byte[] data) : base(deltaTime)
-    { Data = data; }
+    internal SequencerSpecificEvent(int deltaTime, byte[] data)
+    {
+      DeltaTime = deltaTime;
+      Data = data;
+    }
   }
 }

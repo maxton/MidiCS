@@ -29,7 +29,7 @@ namespace MidiCS
       if (stream.ReadInt32BE() != 0x4D54726B)
         throw new InvalidDataException("MIDI track not recognized.");
       long trkLen = stream.ReadUInt32BE();
-      List<MidiMessage> messages = new List<MidiMessage>();
+      List<IMidiMessage> messages = new List<IMidiMessage>();
       long totalTicks = 0;
       string name = "";
       while (trkLen > 0)
@@ -45,13 +45,13 @@ namespace MidiCS
       return new MidiTrack(messages, totalTicks, name);
     }
 
-    private List<MidiMessage> _messages;
+    private List<IMidiMessage> _messages;
 
     public long TotalTicks { get; }
     public string Name { get; }
-    public List<MidiMessage> Messages => _messages;
+    public List<IMidiMessage> Messages => _messages;
 
-    private MidiTrack(List<MidiMessage> messages, long totalTicks, string name)
+    private MidiTrack(List<IMidiMessage> messages, long totalTicks, string name)
     {
       Name = name;
       _messages = messages;

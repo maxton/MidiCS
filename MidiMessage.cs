@@ -23,7 +23,20 @@ using MidiCS.Events;
 
 namespace MidiCS
 {
-  public abstract class MidiMessage
+  public interface IMidiMessage
+  {
+    /// <summary>
+    /// Number of ticks between this and the last event.
+    /// </summary>
+    int DeltaTime { get; }
+
+    /// <summary>
+    /// The type of this event.
+    /// </summary>
+    EventType Type { get; }
+  }
+
+  public static class MidiMessage
   {
     static byte lastStatus = 0;
 
@@ -34,7 +47,7 @@ namespace MidiCS
     /// </summary>
     /// <param name="s"></param>
     /// <returns></returns>
-    public static MidiMessage ReadFrom(Stream s)
+    public static IMidiMessage ReadFrom(Stream s)
     {
       int deltaTime = s.ReadMidiMultiByte();
       byte status = s.ReadUInt8();
@@ -151,17 +164,6 @@ namespace MidiCS
           return new SysexEvent(deltaTime, s.ReadBytes(s.ReadMidiMultiByte()));
         }
       }
-    }
-
-    /// <summary>
-    /// Number of ticks between this and the last event.
-    /// </summary>
-    public int DeltaTime { get; }
-
-    public abstract EventType Type { get; }
-    internal MidiMessage(int deltaTime)
-    {
-      DeltaTime = deltaTime;
     }
   }
 

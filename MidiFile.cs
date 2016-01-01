@@ -106,7 +106,7 @@ namespace MidiCS
       var sigs = new Dictionary<long, Events.TimeSignature>();
       var durations = new SortedDictionary<long, double>();
 
-      foreach (MidiMessage m in _tracks[0].Messages) // tempo map track
+      foreach (IMidiMessage m in _tracks[0].Messages) // tempo map track
       {
         ticks += m.DeltaTime;
         duration += (m.DeltaTime / (double)_ticksPerQn) * (tempo / 1000000.0);
@@ -127,7 +127,7 @@ namespace MidiCS
       {
         if (_tracks[i].TotalTicks <= ticks) continue;
         long tmpTicks = 0;
-        foreach (MidiMessage m in _tracks[i].Messages)
+        foreach (IMidiMessage m in _tracks[i].Messages)
         {
           tmpTicks += m.DeltaTime;
           if (tmpTicks < ticks) continue;
