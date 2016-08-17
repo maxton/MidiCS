@@ -113,13 +113,21 @@ namespace MidiCS
         if (m is Events.TempoEvent)
         {
           tempo = (m as Events.TempoEvent).MicrosPerQn;
-          tempos.Add(ticks, m as Events.TempoEvent);
-          if (!durations.ContainsKey(ticks)) durations.Add(ticks, duration);
+          if (tempos.ContainsKey(ticks))
+            tempos[ticks] = m as Events.TempoEvent;
+          else
+            tempos.Add(ticks, m as Events.TempoEvent);
+          if (!durations.ContainsKey(ticks))
+            durations.Add(ticks, duration);
         }
         else if (m is Events.TimeSignature)
         {
-          sigs.Add(ticks, m as Events.TimeSignature);
-          if (!durations.ContainsKey(ticks)) durations.Add(ticks, duration);
+          if (sigs.ContainsKey(ticks))
+            sigs[ticks] = m as Events.TimeSignature;
+          else
+            sigs.Add(ticks, m as Events.TimeSignature);
+          if (!durations.ContainsKey(ticks))
+            durations.Add(ticks, duration);
         }
       }
       // calculate length for tracks extending past tempo map
@@ -149,34 +157,54 @@ namespace MidiCS
           tempos.TryGetValue(tick, out te);
           sigs.TryGetValue(tick, out ts);
           lastTempo = 60.0 / (te.MicrosPerQn / 1000000.0);
-          _tempoTimeSigMap.Add(new TimeSigTempoEvent(time, lastTempo, true, ts.Numerator, (byte)(1 << ts.Denominator)));
+          _tempoTimeSigMap.Add(new TimeSigTempoEvent(time, lastTempo, true, ts.Numerator, (byte)(1 << ts.Denominator), tick));
         }
         else if (tempos.ContainsKey(tick))
         {
           tempos.TryGetValue(tick, out te);
           lastTempo = 60.0 / (te.MicrosPerQn / 1000000.0);
-          _tempoTimeSigMap.Add(new TimeSigTempoEvent(time, lastTempo, false, 0, 0));
+          _tempoTimeSigMap.Add(new TimeSigTempoEvent(time, lastTempo, false, 0, 0, tick));
         }
         else if (sigs.ContainsKey(tick))
         {
           sigs.TryGetValue(tick, out ts);
-          _tempoTimeSigMap.Add(new TimeSigTempoEvent(time, lastTempo, true, ts.Numerator, (byte)(1 << ts.Denominator)));
+          _tempoTimeSigMap.Add(new TimeSigTempoEvent(time, lastTempo, true, ts.Numerator, (byte)(1 << ts.Denominator), tick));
         }
       }
       return duration;
     }
   }
 
-  public struct TimeSigTempoEvent
+  public class TimeSigTempoEvent
   {
+    /// <summary>
+    /// The time, in seconds, where this tempo change occurs.
+    /// </summary>
     public double Time { get; }
+    /// <summary>
+    /// The MIDI tick at which this tempo change occurs.
+    /// </summary>
+    public long Tick { get; }
+    /// <summary>
+    /// The tempo that follows this marker.
+    /// </summary>
     public double BPM { get; }
+    /// <summary>
+    /// True if this marker defines a new time signature.
+    /// </summary>
     public bool NewTimeSig { get; }
+    /// <summary>
+    /// The numerator of the time signature, if this marker defines a new time signature.
+    /// </summary>
     public byte Numerator { get; }
+    /// <summary>
+    /// The denominator of the time signature, if this marker defines a new time signature.
+    /// </summary>
     public byte Denominator { get; }
-    public TimeSigTempoEvent(double time, double bpm, bool newtimesig, byte num, byte denom)
+    public TimeSigTempoEvent(double time, double bpm, bool newtimesig, byte num, byte denom, long ticks)
     {
       Time = time;
+      Tick = ticks;
       BPM = bpm;
       NewTimeSig = newtimesig;
       Numerator = num;
