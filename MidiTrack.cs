@@ -1,7 +1,7 @@
 ﻿/*
  * MidiTrack.cs
  * 
- * Copyright (c) 2015,2016, maxton. All rights reserved.
+ * Copyright (c) 2015,2016,2018 maxton. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,37 +24,14 @@ namespace MidiCS
 {
   public class MidiTrack
   {
-    public static MidiTrack ReadFrom(Stream stream)
-    {
-      if (stream.ReadInt32BE() != 0x4D54726B)
-        throw new InvalidDataException("MIDI track not recognized.");
-      long trkLen = stream.ReadUInt32BE();
-      List<IMidiMessage> messages = new List<IMidiMessage>();
-      long totalTicks = 0;
-      string name = "";
-      while (trkLen > 0)
-      {
-        long pos = stream.Position;
-        var newMsg = MidiMessage.ReadFrom(stream);
-        messages.Add(newMsg);
-        if (newMsg is Events.TrackName)
-          name = (newMsg as Events.TrackName).Text;
-        totalTicks += newMsg.DeltaTime;
-        trkLen -= stream.Position - pos; // subtract message length from total track length
-      }
-      return new MidiTrack(messages, totalTicks, name);
-    }
-
-    private List<IMidiMessage> _messages;
-
     public long TotalTicks { get; }
     public string Name { get; }
-    public List<IMidiMessage> Messages => _messages;
+    public List<IMidiMessage> Messages { get; }
 
-    private MidiTrack(List<IMidiMessage> messages, long totalTicks, string name)
+    internal MidiTrack(List<IMidiMessage> messages, long totalTicks, string name)
     {
       Name = name;
-      _messages = messages;
+      Messages = messages;
       TotalTicks = totalTicks;
     }
   }

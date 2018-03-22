@@ -1,7 +1,7 @@
 ﻿/*
  * midifile.cs
  * 
- * Copyright (c) 2015,2016, maxton. All rights reserved.
+ * Copyright (c) 2015,2016,2018 maxton. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,20 +26,11 @@ namespace MidiCS
 
   public class MidiFile
   {
-    public static MidiFile FromBytes(byte[] bytes)
-    {
-      using(var s = new MemoryStream(bytes))
-        return new MidiFile(s);
-    }
-    public static MidiFile FromStream(Stream stream)
-    {
-      return new MidiFile(stream);
-    }
-
     public MidiFormat Format => _format;
     public double Duration { get; }
     public IList<TimeSigTempoEvent> TempoTimeSigMap => _tempoTimeSigMap;
     public ushort TicksPerQN => _ticksPerQn;
+    public List<MidiTrack> Tracks => _tracks;
 
     /// <summary>
     /// Tries to find the track whose name matches. Otherwise null is returned.
@@ -61,33 +52,9 @@ namespace MidiCS
     private List<TimeSigTempoEvent> _tempoTimeSigMap;
     private ushort _ticksPerQn;
 
-    private MidiFile(Stream stream)
+    internal MidiFile(MidiFormat format, List<MidiTrack> tracks, ushort ticksPerqn)
     {
-      readHeader(stream);
-      readTracks(stream);
       Duration = ProcessTempoMap();
-    }
-
-    private void readHeader(Stream stream)
-    {
-      // "MThd" big-endian, header size always = 6
-      if (stream.ReadInt32BE() != 0x4D546864 || stream.ReadInt32BE() != 0x6) 
-        throw new InvalidDataException("MIDI file did not begin with proper MIDI header.");
-      _format = (MidiFormat)stream.ReadUInt16BE();
-      if (_format > MidiFormat.MultiTrack)
-        throw new NotSupportedException("MIDI format " + _format + " is not supported by this library.");
-      _tracks = new List<MidiTrack>(stream.ReadUInt16BE());
-      _ticksPerQn = stream.ReadUInt16BE();
-      if ((_ticksPerQn & 0x8000) == 0x8000)
-        throw new NotSupportedException("SMPTE delta time format is not supported by this library.");
-    }
-
-    private void readTracks(Stream stream)
-    {
-      for(int i = 0; i < _tracks.Capacity; i++)
-      {
-        _tracks.Add(MidiTrack.ReadFrom(stream));
-      }
     }
 
     /// <summary>

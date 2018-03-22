@@ -25,6 +25,7 @@ namespace MidiCS.Events
     public int DeltaTime { get; }
     public EventType Type => EventType.SysexRaw;
     public byte[] Data { get; }
+    public string PrettyString => $"Sysex: {Data.Length} bytes";
     internal SysexEvent(int deltaTime, byte[] sysexData)
     {
       DeltaTime = deltaTime;
