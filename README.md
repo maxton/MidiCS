@@ -1,2 +1,2 @@
 # MidiCS
-C# Library for reading Standard MIDI Files (SMF)
+C# Library for reading and writing Standard MIDI Files (SMF)
