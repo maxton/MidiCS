@@ -51,6 +51,19 @@ static class StreamExtensions
     return (short)ret;
   }
 
+  public static void WriteInt16LE(this Stream s, short i)
+  {
+    s.WriteUInt16LE(unchecked((ushort)i));
+  }
+
+  public static void WriteUInt16LE(this Stream s, ushort i)
+  {
+    byte[] tmp = new byte[2];
+    tmp[0] = (byte)(i & 0xFF);
+    tmp[1] = (byte)((i >> 8) & 0xFF);
+    s.Write(tmp, 0, 2);
+  }
+
   /// <summary>
   /// Read an unsigned 16-bit Big-endian integer from the stream.
   /// </summary>
@@ -71,6 +84,23 @@ static class StreamExtensions
     ret = (tmp[0] << 8) & 0xFF00;
     ret |= tmp[1] & 0x00FF;
     return (short)ret;
+  }
+
+  public static void WriteUInt24LE(this Stream s, uint i)
+  {
+    byte[] tmp = new byte[3];
+    tmp[0] = (byte)(i & 0xFF);
+    tmp[1] = (byte)((i >> 8) & 0xFF);
+    tmp[2] = (byte)((i >> 16) & 0xFF);
+    s.Write(tmp, 0, 3);
+  }
+  public static void WriteUInt24BE(this Stream s, uint i)
+  {
+    byte[] tmp = new byte[3];
+    tmp[2] = (byte)(i & 0xFF);
+    tmp[1] = (byte)((i >> 8) & 0xFF);
+    tmp[0] = (byte)((i >> 16) & 0xFF);
+    s.Write(tmp, 0, 3);
   }
 
   /// <summary>
@@ -114,7 +144,7 @@ static class StreamExtensions
   /// </summary>
   /// <param name="s"></param>
   /// <returns></returns>
-  public static int ReadUInt24BE(this Stream s)
+  public static uint ReadUInt24BE(this Stream s)
   {
     int ret;
     byte[] tmp = new byte[3];
@@ -122,7 +152,7 @@ static class StreamExtensions
     ret = tmp[2] & 0x0000FF;
     ret |= (tmp[1] << 8) & 0x00FF00;
     ret |= (tmp[0] << 16) & 0xFF0000;
-    return ret;
+    return (uint)ret;
   }
 
   /// <summary>
@@ -167,6 +197,21 @@ static class StreamExtensions
     ret |= (tmp[2] << 16) & 0x00FF0000;
     ret |= (tmp[3] << 24);
     return ret;
+  }
+
+  public static void WriteInt32LE(this Stream s, int i)
+  {
+    s.WriteUInt32LE(unchecked((uint)i));
+  }
+
+  public static void WriteUInt32LE(this Stream s, uint i)
+  {
+    byte[] tmp = new byte[4];
+    tmp[0] = (byte)(i & 0xFF);
+    tmp[1] = (byte)((i >> 8) & 0xFF);
+    tmp[2] = (byte)((i >> 16) & 0xFF);
+    tmp[3] = (byte)((i >> 24) & 0xFF);
+    s.Write(tmp, 0, 4);
   }
 
   /// <summary>
@@ -222,6 +267,74 @@ static class StreamExtensions
     return ret;
   }
 
+  public static void WriteInt64LE(this Stream s, long i)
+  {
+    s.WriteUInt64LE(unchecked((ulong)i));
+  }
+
+  public static void WriteUInt64LE(this Stream s, ulong i)
+  {
+    byte[] tmp = new byte[8];
+    tmp[0] = (byte)(i & 0xFF);
+    tmp[1] = (byte)((i >> 8) & 0xFF);
+    tmp[2] = (byte)((i >> 16) & 0xFF);
+    tmp[3] = (byte)((i >> 24) & 0xFF);
+    i >>= 32;
+    tmp[4] = (byte)(i & 0xFF);
+    tmp[5] = (byte)((i >> 8) & 0xFF);
+    tmp[6] = (byte)((i >> 16) & 0xFF);
+    tmp[7] = (byte)((i >> 24) & 0xFF);
+    s.Write(tmp, 0, 8);
+  }
+
+  /// <summary>
+  /// Read an unsigned 64-bit big-endian integer from the stream.
+  /// </summary>
+  /// <param name="s"></param>
+  /// <returns></returns>
+  public static ulong ReadUInt64BE(this Stream s) => unchecked((ulong)s.ReadInt64BE());
+
+  /// <summary>
+  /// Read a signed 64-bit big-endian integer from the stream.
+  /// </summary>
+  /// <param name="s"></param>
+  /// <returns></returns>
+  public static long ReadInt64BE(this Stream s)
+  {
+    long ret;
+    byte[] tmp = new byte[8];
+    s.Read(tmp, 0, 8);
+    ret = tmp[3] & 0x000000FFL;
+    ret |= (tmp[2] << 8) & 0x0000FF00L;
+    ret |= (tmp[1] << 16) & 0x00FF0000L;
+    ret |= (tmp[0] << 24) & 0xFF000000L;
+    ret <<= 32;
+    ret |= tmp[7] & 0x000000FFL;
+    ret |= (tmp[6] << 8) & 0x0000FF00L;
+    ret |= (tmp[5] << 16) & 0x00FF0000L;
+    ret |= (tmp[4] << 24) & 0xFF000000L;
+    return ret;
+  }
+
+  /// <summary>
+  /// Reads a multibyte value of the specified length from the stream.
+  /// </summary>
+  /// <param name="s">The stream</param>
+  /// <param name="bytes">Must be less than or equal to 8</param>
+  /// <returns></returns>
+  public static long ReadMultibyteBE(this Stream s, byte bytes)
+  {
+    if (bytes > 8) return 0;
+    long ret = 0;
+    var b = s.ReadBytes(bytes);
+    for (uint i = 0; i < b.Length; i++)
+    {
+      ret <<= 8;
+      ret |= b[i];
+    }
+    return ret;
+  }
+
   /// <summary>
   /// Read a single-precision (4-byte) floating-point value from the stream.
   /// </summary>
@@ -239,11 +352,11 @@ static class StreamExtensions
   /// </summary>
   /// <param name="s"></param>
   /// <returns></returns>
-  public static string ReadASCIINullTerminated(this Stream s)
+  public static string ReadASCIINullTerminated(this Stream s, int limit = -1)
   {
     StringBuilder sb = new StringBuilder(255);
     char cur;
-    while ((cur = (char)s.ReadByte()) != 0)
+    while ((limit == -1 || sb.Length < limit) && (cur = (char)s.ReadByte()) != 0)
     {
       sb.Append(cur);
     }
@@ -289,13 +402,13 @@ static class StreamExtensions
     s.Read(ret, 0, realCount);
     return ret;
   }
-    
+
   /// <summary>
   /// Read a variable-length integral value as found in MIDI messages.
   /// </summary>
   /// <param name="s"></param>
   /// <returns></returns>
-  public static int ReadMidiMultiByte(this Stream s)
+  public static uint ReadMidiMultiByte(this Stream s)
   {
     int ret = 0;
     byte b = (byte)(s.ReadByte());
@@ -320,6 +433,45 @@ static class StreamExtensions
         }
       }
     }
-    return ret;
+    return (uint)ret;
   }
+
+  public static void WriteMidiMultiByte(this Stream s, uint i)
+  {
+    if (i > 0x7FU)
+    {
+      int max = 7;
+      while ((i >> max) > 0x7FU) max += 7;
+      while (max > 0)
+      {
+        s.WriteByte((byte)(((i >> max) & 0x7FU) | 0x80));
+        max -= 7;
+      }
+    }
+    s.WriteByte((byte)(i & 0x7FU));
+  }
+
+  public static void WriteLE(this Stream s, ushort i) => s.WriteUInt16LE(i);
+  public static void WriteLE(this Stream s, uint i) => s.WriteUInt32LE(i);
+  public static void WriteLE(this Stream s, ulong i) => s.WriteUInt64LE(i);
+  public static void WriteLE(this Stream s, short i) => s.WriteInt16LE(i);
+  public static void WriteLE(this Stream s, int i) => s.WriteInt32LE(i);
+  public static void WriteLE(this Stream s, long i) => s.WriteInt64LE(i);
+  public static ushort FlipEndian(this ushort i) => (ushort)((i & 0xFFU) << 8 | (i & 0xFF00U) >> 8);
+  public static uint FlipEndian(this uint i) => (i & 0x000000FFU) << 24 | (i & 0x0000FF00U) << 8 |
+                                                (i & 0x00FF0000U) >> 8 | (i & 0xFF000000U) >> 24;
+  public static ulong FlipEndian(this ulong i) => (i & 0x00000000000000FFUL) << 56 | (i & 0x000000000000FF00UL) << 40 |
+                                                   (i & 0x0000000000FF0000UL) << 24 | (i & 0x00000000FF000000UL) << 8 |
+                                                   (i & 0x000000FF00000000UL) >> 8 | (i & 0x0000FF0000000000UL) >> 24 |
+                                                   (i & 0x00FF000000000000UL) >> 40 | (i & 0xFF00000000000000UL) >> 56;
+  public static short FlipEndian(this short i) => unchecked((short)((ushort)i).FlipEndian());
+  public static int FlipEndian(this int i) => unchecked((int)((uint)i).FlipEndian());
+  public static long FlipEndian(this long i) => unchecked((long)((ulong)i).FlipEndian());
+  public static void WriteBE(this Stream s, ushort i) => s.WriteUInt16LE(i.FlipEndian());
+  public static void WriteBE(this Stream s, uint i) => s.WriteUInt32LE(i.FlipEndian());
+  public static void WriteBE(this Stream s, ulong i) => s.WriteUInt64LE(i.FlipEndian());
+  public static void WriteBE(this Stream s, short i) => s.WriteInt16LE(i.FlipEndian());
+  public static void WriteBE(this Stream s, int i) => s.WriteInt32LE(i.FlipEndian());
+  public static void WriteBE(this Stream s, long i) => s.WriteInt64LE(i.FlipEndian());
+
 }

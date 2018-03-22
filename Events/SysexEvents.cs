@@ -22,11 +22,11 @@ namespace MidiCS.Events
 {
   public class SysexEvent : IMidiMessage
   {
-    public int DeltaTime { get; }
+    public uint DeltaTime { get; }
     public EventType Type => EventType.SysexRaw;
     public byte[] Data { get; }
     public string PrettyString => $"Sysex: {Data.Length} bytes";
-    internal SysexEvent(int deltaTime, byte[] sysexData)
+    internal SysexEvent(uint deltaTime, byte[] sysexData)
     {
       DeltaTime = deltaTime;
       Data = sysexData;

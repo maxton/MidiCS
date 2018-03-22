@@ -66,7 +66,7 @@ namespace MidiCS
     /// <returns></returns>
     public static IMidiMessage readMessage(Stream s)
     {
-      int deltaTime = s.ReadMidiMultiByte();
+      uint deltaTime = s.ReadMidiMultiByte();
       byte status = s.ReadUInt8();
       if (status < 0x80) // running status
       {
@@ -113,7 +113,7 @@ namespace MidiCS
       if (status == 0xFF) // meta event
       {
         byte type = s.ReadUInt8();
-        int length = s.ReadMidiMultiByte();
+        int length = (int)s.ReadMidiMultiByte();
         byte[] tmp;
         switch ((MetaEventType)type)
         {
@@ -178,7 +178,7 @@ namespace MidiCS
         }
         else
         {
-          return new SysexEvent(deltaTime, s.ReadBytes(s.ReadMidiMultiByte()));
+          return new SysexEvent(deltaTime, s.ReadBytes((int)s.ReadMidiMultiByte()));
         }
       }
     }

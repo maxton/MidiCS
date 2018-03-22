@@ -28,7 +28,7 @@ namespace MidiCS
     /// <summary>
     /// Number of ticks between this and the last event.
     /// </summary>
-    int DeltaTime { get; }
+    uint DeltaTime { get; }
 
     /// <summary>
     /// The type of this event.
