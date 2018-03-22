@@ -79,7 +79,7 @@ namespace MidiCS
         duration += (m.DeltaTime / (double)_ticksPerQn) * (tempo / 1000000.0);
         if (m is Events.TempoEvent)
         {
-          tempo = (m as Events.TempoEvent).MicrosPerQn;
+          tempo = (int)(m as Events.TempoEvent).MicrosPerQn;
           if (tempos.ContainsKey(ticks))
             tempos[ticks] = m as Events.TempoEvent;
           else
