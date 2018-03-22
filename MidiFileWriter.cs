@@ -77,6 +77,7 @@ namespace MidiCS
           // cancel running status
           running_status = 0;
           s.WriteByte(0xFF);
+          s.WriteByte((byte)e.MetaType);
           switch(e)
           {
             case SequenceNumber x:

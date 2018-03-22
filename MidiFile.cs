@@ -54,6 +54,9 @@ namespace MidiCS
 
     internal MidiFile(MidiFormat format, List<MidiTrack> tracks, ushort ticksPerqn)
     {
+      _format = format;
+      _tracks = tracks;
+      _ticksPerQn = ticksPerqn;
       Duration = ProcessTempoMap();
     }
 
