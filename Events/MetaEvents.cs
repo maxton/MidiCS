@@ -35,7 +35,7 @@ namespace MidiCS.Events
     public MetaEventType MetaType => MetaEventType.SequenceNumber;
     public ushort Number { get; }
     public string PrettyString => $"SequenceNumber: {Number}";
-    internal SequenceNumber(uint deltaTime, ushort number)
+    public SequenceNumber(uint deltaTime, ushort number)
     {
       DeltaTime = deltaTime;
       Number = number;
@@ -48,7 +48,7 @@ namespace MidiCS.Events
     public string Text { get; }
     public MetaEventType MetaType => MetaEventType.TextEvent;
     public string PrettyString => $"TextEvent: {Text}";
-    internal TextEvent(uint deltaTime, string text)
+    public TextEvent(uint deltaTime, string text)
     {
       DeltaTime = deltaTime;
       Text = text;
@@ -61,7 +61,7 @@ namespace MidiCS.Events
     public string Text { get; }
     public MetaEventType MetaType => MetaEventType.CopyrightNotice;
     public string PrettyString => $"CopyrightNotice: {Text}";
-    internal CopyrightNotice(uint deltaTime, string text)
+    public CopyrightNotice(uint deltaTime, string text)
     {
       DeltaTime = deltaTime;
       Text = text;
@@ -74,7 +74,7 @@ namespace MidiCS.Events
     public string Text { get; }
     public MetaEventType MetaType => MetaEventType.TrackName;
     public string PrettyString => $"TrackName: {Text}";
-    internal TrackName(uint deltaTime, string name)
+    public TrackName(uint deltaTime, string name)
     {
       DeltaTime = deltaTime;
       Text = name;
@@ -87,7 +87,7 @@ namespace MidiCS.Events
     public string Text { get; }
     public MetaEventType MetaType => MetaEventType.InstrumentName;
     public string PrettyString => $"InstrumentName: {Text}";
-    internal InstrumentName(uint deltaTime, string name)
+    public InstrumentName(uint deltaTime, string name)
     {
       DeltaTime = deltaTime;
       Text = name;
@@ -100,7 +100,7 @@ namespace MidiCS.Events
     public string Text { get; }
     public MetaEventType MetaType => MetaEventType.Lyric;
     public string PrettyString => $"Lyric: {Text}";
-    internal Lyric(uint deltaTime, string text)
+    public Lyric(uint deltaTime, string text)
     {
       DeltaTime = deltaTime;
       Text = text;
@@ -113,7 +113,7 @@ namespace MidiCS.Events
     public string Text { get; }
     public MetaEventType MetaType => MetaEventType.Marker;
     public string PrettyString => $"Marker: {Text}";
-    internal Marker(uint deltaTime, string text)
+    public Marker(uint deltaTime, string text)
     {
       DeltaTime = deltaTime;
       Text = text;
@@ -126,7 +126,7 @@ namespace MidiCS.Events
     public string Text { get; }
     public MetaEventType MetaType => MetaEventType.CuePoint;
     public string PrettyString => $"CuePoint: {Text}";
-    internal CuePoint(uint deltaTime, string text)
+    public CuePoint(uint deltaTime, string text)
     {
       DeltaTime = deltaTime;
       Text = text;
@@ -139,7 +139,7 @@ namespace MidiCS.Events
     public MetaEventType MetaType => MetaEventType.ChannelPrefix;
     public byte Channel { get; }
     public string PrettyString => $"ChannelPrefix: {Channel}";
-    internal ChannelPrefix(uint deltaTime, byte channel)
+    public ChannelPrefix(uint deltaTime, byte channel)
     {
       DeltaTime = deltaTime;
       Channel = channel;
@@ -151,7 +151,7 @@ namespace MidiCS.Events
     public EventType Type => EventType.MetaEvent;
     public MetaEventType MetaType => MetaEventType.EndOfTrack;
     public string PrettyString => $"EndOfTrack";
-    internal EndOfTrackEvent(uint deltaTime)
+    public EndOfTrackEvent(uint deltaTime)
     {
       DeltaTime = deltaTime;
     }
@@ -163,7 +163,7 @@ namespace MidiCS.Events
     public MetaEventType MetaType => MetaEventType.TempoEvent;
     public uint MicrosPerQn { get; }
     public string PrettyString => $"TempoEvent: {MicrosPerQn}";
-    internal TempoEvent(uint deltaTime, uint microsPerQn)
+    public TempoEvent(uint deltaTime, uint microsPerQn)
     {
       DeltaTime = deltaTime;
       MicrosPerQn = microsPerQn;
@@ -180,7 +180,7 @@ namespace MidiCS.Events
     public byte Frames { get; }
     public byte FrameHundredths { get; }
     public string PrettyString => $"SmtpeOffset: {Hours}:{Minutes}:{Seconds}::{Frames}.{FrameHundredths}";
-    internal SmtpeOffset(uint deltaTime, byte h, byte m, byte s, byte f, byte ff)
+    public SmtpeOffset(uint deltaTime, byte h, byte m, byte s, byte f, byte ff)
     {
       DeltaTime = deltaTime;
       Hours = h;
@@ -200,7 +200,7 @@ namespace MidiCS.Events
     public byte ClocksPerTick { get; }
     public byte ThirtySecondNotesPer24Clocks { get; }
     public string PrettyString => $"TimeSignature: {Numerator}/{Denominator} @ {ClocksPerTick}, {ThirtySecondNotesPer24Clocks}";
-    internal TimeSignature(uint deltaTime, byte num, byte denom, byte clocksPerTick, byte thirtySecondNotesPer24Clocks)
+    public TimeSignature(uint deltaTime, byte num, byte denom, byte clocksPerTick, byte thirtySecondNotesPer24Clocks)
     {
       DeltaTime = deltaTime;
       Numerator = num;
@@ -217,7 +217,7 @@ namespace MidiCS.Events
     public byte Sharps { get; }
     public byte Tonality { get; }
     public string PrettyString => $"KeySignature: {Sharps} sharps, {Tonality} tonality";
-    internal KeySignature(uint deltaTime, byte sharps, byte tonality)
+    public KeySignature(uint deltaTime, byte sharps, byte tonality)
     {
       DeltaTime = deltaTime;
       Sharps = sharps;
@@ -231,7 +231,7 @@ namespace MidiCS.Events
     public MetaEventType MetaType => MetaEventType.SequencerSpecific;
     public byte[] Data { get; }
     public string PrettyString => $"SequencerSpecificEvent: {Data.Length} bytes";
-    internal SequencerSpecificEvent(uint deltaTime, byte[] data)
+    public SequencerSpecificEvent(uint deltaTime, byte[] data)
     {
       DeltaTime = deltaTime;
       Data = data;

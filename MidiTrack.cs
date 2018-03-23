@@ -28,7 +28,7 @@ namespace MidiCS
     public string Name { get; }
     public List<IMidiMessage> Messages { get; }
 
-    internal MidiTrack(List<IMidiMessage> messages, long totalTicks, string name)
+    public MidiTrack(List<IMidiMessage> messages, long totalTicks, string name)
     {
       Name = name;
       Messages = messages;

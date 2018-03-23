@@ -33,7 +33,7 @@ namespace MidiCS.Events
     public byte Key { get; }
     public byte Velocity { get; }
     public string PrettyString => $"NoteOn: {Channel} {Key} {Velocity}";
-    internal NoteOnEvent(uint deltaTime, byte channel, byte key, byte velocity)
+    public NoteOnEvent(uint deltaTime, byte channel, byte key, byte velocity)
     {
       DeltaTime = deltaTime;
       Channel = channel;
@@ -49,7 +49,7 @@ namespace MidiCS.Events
     public byte Key { get; }
     public byte Velocity { get; }
     public string PrettyString => $"NoteOff: {Channel} {Key} {Velocity}";
-    internal NoteOffEvent(uint deltaTime, byte channel, byte key, byte velocity)
+    public NoteOffEvent(uint deltaTime, byte channel, byte key, byte velocity)
     {
       DeltaTime = deltaTime;
       Channel = channel;
@@ -65,7 +65,7 @@ namespace MidiCS.Events
     public byte Key { get; }
     public byte Pressure { get; }
     public string PrettyString => $"NotePressure: {Channel} {Key} {Pressure}";
-    internal NotePressureEvent(uint deltaTime, byte channel, byte key, byte pressure)
+    public NotePressureEvent(uint deltaTime, byte channel, byte key, byte pressure)
     {
       DeltaTime = deltaTime;
       Channel = channel;
@@ -81,7 +81,7 @@ namespace MidiCS.Events
     public byte Controller { get; }
     public byte Value { get; }
     public string PrettyString => $"Controller: {Channel} {Controller} {Value}";
-    internal ControllerEvent(uint deltaTime, byte channel, byte controller, byte value)
+    public ControllerEvent(uint deltaTime, byte channel, byte controller, byte value)
     {
       DeltaTime = deltaTime;
       Channel = channel;
@@ -96,7 +96,7 @@ namespace MidiCS.Events
     public EventType Type => EventType.ProgramChange;
     public byte Program { get; }
     public string PrettyString => $"ProgramChg: {Channel} {Program}";
-    internal ProgramChgEvent(uint deltaTime, byte channel, byte program)
+    public ProgramChgEvent(uint deltaTime, byte channel, byte program)
     {
       DeltaTime = deltaTime;
       Channel = channel;
@@ -110,7 +110,7 @@ namespace MidiCS.Events
     public EventType Type => EventType.ChannelPressure;
     public byte Pressure { get; }
     public string PrettyString => $"ChannelPressure: {Channel} {Pressure}";
-    internal ChannelPressureEvent(uint deltaTime, byte channel, byte pressure)
+    public ChannelPressureEvent(uint deltaTime, byte channel, byte pressure)
     {
       DeltaTime = deltaTime;
       Channel = channel;
@@ -124,7 +124,7 @@ namespace MidiCS.Events
     public EventType Type => EventType.PitchBend;
     public ushort Bend { get; }
     public string PrettyString => $"PitchBend: {Channel} {Bend}";
-    internal PitchBendEvent(uint deltaTime, byte channel, ushort bend)
+    public PitchBendEvent(uint deltaTime, byte channel, ushort bend)
     {
       DeltaTime = deltaTime;
       Channel = channel;

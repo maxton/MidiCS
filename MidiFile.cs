@@ -52,7 +52,7 @@ namespace MidiCS
     private List<TimeSigTempoEvent> _tempoTimeSigMap;
     private ushort _ticksPerQn;
 
-    internal MidiFile(MidiFormat format, List<MidiTrack> tracks, ushort ticksPerqn)
+    public MidiFile(MidiFormat format, List<MidiTrack> tracks, ushort ticksPerqn)
     {
       _format = format;
       _tracks = tracks;
