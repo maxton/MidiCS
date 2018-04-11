@@ -54,8 +54,12 @@ namespace MidiCS
 
     public MidiFile(MidiFormat format, List<MidiTrack> tracks, ushort ticksPerqn)
     {
+      _tracks = tracks ?? throw new ArgumentException("Tracks must not be null", nameof(tracks));
+      if(_tracks.Count == 0)
+      {
+        throw new ArgumentException("No tracks provided to Midi File", nameof(tracks));
+      }
       _format = format;
-      _tracks = tracks;
       _ticksPerQn = ticksPerqn;
       Duration = ProcessTempoMap();
     }
@@ -133,7 +137,8 @@ namespace MidiCS
         {
           tempos.TryGetValue(tick, out te);
           lastTempo = 60.0 / (te.MicrosPerQn / 1000000.0);
-          _tempoTimeSigMap.Add(new TimeSigTempoEvent(time, lastTempo, false, 0, 0, tick));
+          var lastTS = _tempoTimeSigMap.Last();
+          _tempoTimeSigMap.Add(new TimeSigTempoEvent(time, lastTempo, false, lastTS.Numerator, lastTS.Denominator, tick));
         }
         else if (sigs.ContainsKey(tick))
         {
