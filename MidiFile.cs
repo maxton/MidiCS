@@ -131,19 +131,19 @@ namespace MidiCS
           tempos.TryGetValue(tick, out te);
           sigs.TryGetValue(tick, out ts);
           lastTempo = 60.0 / (te.MicrosPerQn / 1000000.0);
-          _tempoTimeSigMap.Add(new TimeSigTempoEvent(time, lastTempo, true, ts.Numerator, (byte)(1 << ts.Denominator), tick));
+          _tempoTimeSigMap.Add(new TimeSigTempoEvent(time, lastTempo, true, true, ts.Numerator, (byte)(1 << ts.Denominator), tick));
         }
         else if (tempos.ContainsKey(tick))
         {
           tempos.TryGetValue(tick, out te);
           lastTempo = 60.0 / (te.MicrosPerQn / 1000000.0);
           var lastTS = _tempoTimeSigMap.Last();
-          _tempoTimeSigMap.Add(new TimeSigTempoEvent(time, lastTempo, false, lastTS.Numerator, lastTS.Denominator, tick));
+          _tempoTimeSigMap.Add(new TimeSigTempoEvent(time, lastTempo, false, true, lastTS.Numerator, lastTS.Denominator, tick));
         }
         else if (sigs.ContainsKey(tick))
         {
           sigs.TryGetValue(tick, out ts);
-          _tempoTimeSigMap.Add(new TimeSigTempoEvent(time, lastTempo, true, ts.Numerator, (byte)(1 << ts.Denominator), tick));
+          _tempoTimeSigMap.Add(new TimeSigTempoEvent(time, lastTempo, true, false, ts.Numerator, (byte)(1 << ts.Denominator), tick));
         }
       }
       return duration;
@@ -169,6 +169,10 @@ namespace MidiCS
     /// </summary>
     public bool NewTimeSig { get; }
     /// <summary>
+    /// True if this marker defines a new tempo.
+    /// </summary>
+    public bool NewTempo { get; }
+    /// <summary>
     /// The numerator of the time signature, if this marker defines a new time signature.
     /// </summary>
     public byte Numerator { get; }
@@ -176,12 +180,13 @@ namespace MidiCS
     /// The denominator of the time signature, if this marker defines a new time signature.
     /// </summary>
     public byte Denominator { get; }
-    public TimeSigTempoEvent(double time, double bpm, bool newtimesig, byte num, byte denom, long ticks)
+    public TimeSigTempoEvent(double time, double bpm, bool newtimesig, bool newTempo, byte num, byte denom, long ticks)
     {
       Time = time;
       Tick = ticks;
       BPM = bpm;
       NewTimeSig = newtimesig;
+      NewTempo = newTempo;
       Numerator = num;
       Denominator = denom;
     }
